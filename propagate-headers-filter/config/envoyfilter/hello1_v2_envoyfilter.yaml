@@ -1,0 +1,46 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: hello1v2-propaganda-filter
+spec:
+  workloadSelector:
+    labels:
+      app: hello1-deploy-v2
+      version: v2
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_OUTBOUND
+        proxy:
+          proxyVersion: "^1\\.8\\.*"
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+              subFilter:
+                name: envoy.filters.http.router
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.wasm
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            value:
+              config:
+                name: propaganda_filter
+                root_id: propaganda_filter_root
+                configuration:
+                  '@type': type.googleapis.com/google.protobuf.StringValue
+                  value: |
+                    {
+                      "head_tag_name": "route-v",
+                      "head_tag_value": "hello2v2"
+                    }
+                vm_config:
+                  runtime: envoy.wasm.runtime.v8
+                  vm_id: propaganda_filter_vm
+                  code:
+                    local:
+                      filename: /var/local/lib/wasm-filters/propaganda-header-filter.wasm
+                  allow_precompiled: true

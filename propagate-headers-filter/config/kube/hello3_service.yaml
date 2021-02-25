@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello3-svc
+  labels:
+    app: hello3-svc
+spec:
+  ports:
+    - port: 8001
+      name: http
+  selector:
+    service: hello3-deploy

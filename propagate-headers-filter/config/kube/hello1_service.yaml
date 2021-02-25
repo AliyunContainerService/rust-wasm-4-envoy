@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello1-svc
+  labels:
+    app: hello1-svc
+spec:
+  ports:
+    - port: 8001
+      name: http
+  selector:
+    service: hello1-deploy

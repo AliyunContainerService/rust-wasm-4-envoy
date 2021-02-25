@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello3-deploy-v1
+  labels:
+    app: hello3-deploy-v1
+    service: hello3-deploy
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello3-deploy-v1
+      service: hello3-deploy
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hello3-deploy-v1
+        service: hello3-deploy
+        version: v1
+    spec:
+      serviceAccountName: http-hello-sa
+      containers:
+        - name: hello-v1-deploy
+          image: registry.cn-beijing.aliyuncs.com/asm_repo/http_springboot_v1:1.0.0
+          ports:
+            - containerPort: 8001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello3-deploy-v2
+  labels:
+    app: hello3-deploy-v2
+    service: hello3-deploy
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello3-deploy-v2
+      service: hello3-deploy
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hello3-deploy-v2
+        service: hello3-deploy
+        version: v2
+    spec:
+      serviceAccountName: http-hello-sa
+      containers:
+        - name: hello-v2-deploy
+          image: registry.cn-beijing.aliyuncs.com/asm_repo/http_springboot_v2:1.0.0
+          ports:
+            - containerPort: 8001

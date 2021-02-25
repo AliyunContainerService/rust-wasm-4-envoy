@@ -1,0 +1,4 @@
+# kubeconfig of user's kubenetes cluster
+USER_CONFIG=$HOME/shop_config/kubeconfig/ack_3rd_staging
+# kubeconfig of user's servicemesh cluster
+MESH_CONFIG=$HOME/shop_config/kubeconfig/asm_staging

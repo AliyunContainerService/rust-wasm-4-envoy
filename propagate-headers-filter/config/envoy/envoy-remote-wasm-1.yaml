@@ -1,0 +1,59 @@
+static_resources:
+  listeners:
+    - name: main
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 80
+      filter_chains:
+        - filters:
+            #      - name: envoy.http_connection_manager
+            - name: envoy.filters.network.http_connection_manager
+              config:
+                stat_prefix: ingress_http
+                codec_type: auto
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains:
+                        - "*"
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: web_service
+                http_filters:
+                  - name: envoy.filters.http.wasm
+                    config:
+                      config:
+                        name: "propaganda_filter"
+                        root_id: "propaganda_filter"
+                        vm_config:
+                          runtime: "envoy.wasm.runtime.v8"
+                          code:
+                            remote:
+                              http_uri:
+                                uri: "http://30.27.145.216:8000/propaganda_filter.wasm"
+                                cluster: web_service
+                                timeout:
+                                  seconds: 60
+                              sha256: "da2e223bbb8c8072f50f519e8887dce4bc5f53a00eca5b05e983bc09476afa35"
+                          allow_precompiled: true
+                  - name: envoy.filters.http.router
+                    config: {}
+  clusters:
+    - name: web_service
+      connect_timeout: 0.25s
+      type: STRICT_DNS
+      lb_policy: round_robin
+      hosts:
+        - socket_address:
+            address: web_service
+            port_value: 5678
+admin:
+  access_log_path: "/dev/null"
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 8001

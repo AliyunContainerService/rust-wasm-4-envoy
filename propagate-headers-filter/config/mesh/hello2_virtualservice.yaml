@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello2-vs
+spec:
+  hosts:
+    - hello2-svc
+  http:
+  - name: hello2-v2-route
+    match:
+    - headers:
+        route-v:
+          exact: hello2v2
+    route:
+    - destination:
+        host: hello2-svc
+        subset: hello2v2
+  - route:
+    - destination:
+        host: hello2-svc
+        subset: hello2v1
